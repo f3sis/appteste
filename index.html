@@ -1,33 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="webapp_test">
-  <link rel="apple-touch-icon" href="web/icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="shortcut icon" type="image/png" href="web/favicon.png"/>
-
-  <title>webapp_test</title>
-  <link rel="manifest" href="web/manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Intelligence | Data Driven Tips</title>
+    <link rel="manifest" href='data:application/json,{"name":"SalesTips","short_name":"SalesTips","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#38bdf8","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/1055/1055644.png","sizes":"512x512","type":"image/png"}]}'>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), 
+                        url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2072') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
 </head>
-<body>
-  <!-- This script installs service_worker.js to provide PWA functionality to
-       application. For more information, see:
-       https://developers.google.com/web/fundamentals/primers/service-workers -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('flutter_service_worker.js');
-      });
-    }
-  </script>
-  <script src="web/main.dart.js" type="application/javascript"></script>
+<body class="h-screen flex items-center justify-center p-4 overflow-hidden text-slate-200">
+
+    <div class="max-w-md w-full glass rounded-3xl p-8 shadow-2xl transform transition-all hover:scale-[1.01]">
+        <header class="mb-8 text-center">
+            <h1 class="text-xs uppercase tracking-[0.3em] text-sky-400 font-semibold mb-2">Sales Intelligence</h1>
+            <div class="h-1 w-12 bg-sky-500 mx-auto rounded-full"></div>
+        </header>
+
+        <div id="tip-container" class="min-h-[200px] flex flex-col justify-center transition-opacity duration-500">
+            <h2 id="tip-title" class="text-2xl font-bold mb-4 text-white">Pronto para vender?</h2>
+            <p id="tip-content" class="text-slate-400 leading-relaxed italic">
+                Clique no botão abaixo para gerar um insight baseado em dados.
+            </p>
+        </div>
+
+        <div class="mt-8 space-y-3">
+            <button onclick="generateTip()" class="w-full py-4 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-sky-900/20 active:scale-95">
+                GERAR NOVA DICA
+            </button>
+            <button onclick="requestNotification()" id="notify-btn" class="w-full py-2 text-xs font-medium text-slate-500 hover:text-sky-300 transition-colors">
+                ATIVAR NOTIFICAÇÕES PUSH
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Pipeline de Dados: 50 Dicas Estratégicas
+        const salesData = [
+            { t: "Escuta Ativa", d: "Ouça 80% do tempo e fale 20%; o cliente entrega a objeção e a solução na fala dele." },
+            { t: "Foco no Benefício", d: "Pare de vender características (o que é) e venda benefícios (o que faz pelo cliente)." },
+            { t: "O Poder do Porquê", d: "Explique o motivo da sua oferta; as pessoas aceitam melhor quando há uma justificativa." },
+            { t: "Ancoragem de Preço", d: "Apresente primeiro uma opção de maior valor para que a principal pareça mais barata." },
+            { t: "Urgência Real", d: "Crie prazos verdadeiros. A escassez gera ação, mas a mentira destrói a confiança." },
+            { t: "Linguagem Corporal", d: "Em reuniões, mantenha postura aberta. Segurança vale mais que mil palavras." },
+            { t: "Perguntas Abertas", d: "Use 'Como' e 'Por que' em vez de perguntas que aceitam apenas 'Sim' ou 'Não'." },
+            { t: "Storytelling", d: "Não jogue dados. Conte a história de um cliente que teve a vida transformada pelo produto." },
+            { t: "Fechamento Natural", d: "Não espere o 'quer comprar?'. Pergunte: 'Prefere receber na segunda ou quarta?'." },
+            { t: "Valor vs. Preço", d: "Se o cliente achou caro, você não demonstrou valor suficiente. Volte à solução." },
+            { t: "MVP", d: "Lance rápido, erre barato e ajuste no caminho. O perfeito é inimigo do feito." },
+            { t: "Cultura de Dono", d: "Contrate pessoas que queiram construir o negócio, não apenas cumprir horário." },
+            { t: "Gestão de Caixa", d: "Lucro é vaidade, caixa é sanidade. Nunca confunda o dinheiro da empresa com o seu." },
+            { t: "Adaptação Rápida", d: "O mercado muda em dias. Seja como água: adapte-se ao formato do novo recipiente." },
+            { t: "Foco no Problema", d: "Apaixone-se pelo problema do cliente, não pela sua solução. Soluções ficam obsoletas." },
+            { t: "Nicho Específico", d: "Quem tenta vender para todo mundo acaba não sendo lembrado por ninguém." },
+            { t: "Autoridade Digital", d: "Ensine algo gratuitamente. Quem educa o mercado, domina a preferência de compra." },
+            { t: "Prova Social", d: "Depoimentos reais valem mais do que qualquer peça publicitária de estúdio." },
+            { t: "Branding Consistente", d: "Use as mesmas cores, tom de voz e valores em todos os pontos de contato." },
+            { t: "Marketing de Intenção", d: "Esteja onde o cliente busca a solução (Google), não apenas onde ele se diverte." },
+            { t: "Chamada para Ação", d: "Todo post ou anúncio deve dizer claramente o que o cliente deve fazer a seguir." },
+            { t: "Isca Digital", d: "Ofereça um material gratuito em troca do contato para criar sua própria base." },
+            { t: "Marketing de Indicação", d: "Crie um incentivo para que seus clientes atuais tragam novos clientes." },
+            { t: "SEO Mental", d: "Quais são as 3 palavras que você quer que venham à mente do cliente sobre você?" },
+            { t: "Omnichannel", d: "Esteja no Instagram, WhatsApp e e-mail. O cliente escolhe onde falar com você." },
+            { t: "Desejo de Status", d: "Muitas vezes o cliente compra a percepção que os outros terão dele." },
+            { t: "Economia de Tempo", d: "Conveniência é o novo luxo. Se você faz o cliente ganhar tempo, ele paga mais." },
+            { t: "Segurança Mental", d: "Ofereça garantias fortes para remover o medo do arrependimento." },
+            { t: "Pertencimento", d: "O cliente quer sentir que faz parte de um grupo exclusivo ou de uma causa maior." },
+            { t: "Autoestima", d: "Como seu produto faz o cliente se sentir melhor consigo mesmo após a compra?" },
+            { t: "Humanização", d: "Pessoas compram de pessoas. Mostre os bastidores e quem faz a mágica." },
+            { t: "Empatia Genuína", d: "Se o cliente tem um problema, a dor é dele, mas a solução precisa ser sua." },
+            { t: "Antecipação", d: "Surpreenda o cliente resolvendo um problema antes mesmo dele perceber." },
+            { t: "Canais de Resposta", d: "Responda rápido. No digital, 10 minutos de espera podem custar uma venda." },
+            { t: "Personalização", d: "Chame pelo nome e lembre detalhes. O cliente quer ser tratado como único." },
+            { t: "Transparência", d: "Errou? Peça desculpas e resolva. A honestidade cria laços mais fortes." },
+            { t: "Educação do Cliente", d: "Envie dicas de como usar melhor o que ele comprou. Ajude-o a ter sucesso." },
+            { t: "Comunidade", d: "Crie um espaço onde seus clientes possam interagir e trocar experiências." },
+            { t: "Overdelivering", d: "Prometa o 10 e entregue o 11. O encanto mora no detalhe não esperado." },
+            { t: "Pesquisa NPS", d: "Pergunte regularmente: 'De 0 a 10, quanto você nos indicaria?'. Ouça as críticas." },
+            { t: "Regra dos 3 Dias", d: "Entre em contato 3 dias após a entrega para saber se tudo está perfeito." },
+            { t: "Upsell Estratégico", d: "Vender para quem já é cliente é 7x mais barato do que conquistar um novo." },
+            { t: "Lembrete de Recompra", d: "Se seu produto acaba, avise o cliente alguns dias antes de terminar." },
+            { t: "Sucesso do Cliente", d: "O trabalho termina quando o cliente alcança o resultado, não no pagamento." },
+            { t: "Clube de Vantagens", d: "Dê acesso antecipado a lançamentos para quem já é cliente fiel." },
+            { t: "Conteúdo Exclusivo", d: "Mande um vídeo 'secreto' ensinando um truque mestre sobre o produto." },
+            { t: "Coleta de Feedback", d: "Use o pós-venda para melhorar. O cliente se sente importante ao ser ouvido." },
+            { t: "Datas Especiais", d: "Aniversários não são para vender, são para celebrar o cliente." },
+            { t: "Recuperação de Carrinho", d: "Tente entender o motivo real da desistência de quem não comprou." },
+            { t: "Transforme em Fã", d: "Um cliente satisfeito volta; um fã traz mais dez pessoas com ele." }
+        ];
+
+        function generateTip() {
+            const container = document.getElementById('tip-container');
+            container.style.opacity = 0;
+            
+            setTimeout(() => {
+                const random = salesData[Math.floor(Math.random() * salesData.length)];
+                document.getElementById('tip-title').innerText = random.t;
+                document.getElementById('tip-content').innerText = random.d;
+                container.style.opacity = 1;
+                
+                // Disparar notificação se permitido
+                if (Notification.permission === "granted") {
+                    new Notification("Nova Dica de Vendas!", {
+                        body: random.t,
+                        icon: "https://cdn-icons-png.flaticon.com/512/1055/1055644.png"
+                    });
+                }
+            }, 500);
+        }
+
+        async function requestNotification() {
+            const permission = await Notification.requestPermission();
+            if (permission === "granted") {
+                document.getElementById('notify-btn').innerText = "NOTIFICAÇÕES ATIVADAS ✓";
+                generateTip();
+            }
+        }
+
+        // --- LÓGICA DE ENGENHARIA PWA (Service Worker Inline) ---
+        const swCode = `
+            self.addEventListener('install', e => self.skipWaiting());
+            self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register(swUrl).then(() => console.log('SW Operacional via Blob'));
+        }
+    </script>
 </body>
 </html>
+
