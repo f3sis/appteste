@@ -3,158 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>InsightFlow | Sales Intelligence</title>
-    
-    <link rel="manifest" href='data:application/json,{"name":"InsightFlow","short_name":"IFlow","start_url":".","display":"standalone","background_color":"#ffffff","theme_color":"#6366f1","icons":[{"src":"https://cdn-icons-png.flaticon.com/512/1160/1160358.png","sizes":"512x512","type":"image/png"}]}'>
-    
+    <title>InsightFlow Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #f8fafc;
-        }
-        .card-shadow {
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.02), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .toggle-dot { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         input:checked ~ .toggle-dot { transform: translateX(100%); background-color: white; }
         input:checked ~ .toggle-bg { background-color: #6366f1; }
-        
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .animate-content { animation: fadeInScale 0.5s ease-out; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-6">
+<body class="min-h-screen flex items-center justify-center p-6">
 
-    <div class="w-full max-w-sm bg-white rounded-[2.5rem] p-8 card-shadow border border-slate-100 flex flex-col items-center text-center">
-        
-        <div class="flex items-center gap-2 mb-10">
-            <div class="bg-indigo-50 p-2 rounded-xl">
-                <i data-lucide="trending-up" class="w-5 h-5 text-indigo-600"></i>
+    <div class="w-full max-w-sm bg-white rounded-[2.5rem] p-8 shadow-xl border border-slate-100">
+        <div class="flex justify-between items-center mb-10">
+            <div class="flex items-center gap-2">
+                <div class="bg-indigo-50 p-2 rounded-xl text-indigo-600">
+                    <i data-lucide="zap"></i>
+                </div>
+                <span class="font-bold text-slate-800">InsightFlow</span>
             </div>
-            <span class="font-bold text-slate-800 tracking-tight text-lg">InsightFlow</span>
+            <span id="badge" class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded-full font-bold">OFFLINE</span>
         </div>
 
-        <div id="display-area" class="flex-1 flex flex-col justify-center min-h-[280px]">
-            <div id="tip-card" class="animate-content">
-                <div class="bg-indigo-50/50 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i data-lucide="sparkles" class="w-6 h-6 text-indigo-500"></i>
-                </div>
-                <h2 id="tip-title" class="text-xl font-bold text-slate-900 mb-4 px-2">Pronto para decolar?</h2>
-                <p id="tip-desc" class="text-slate-500 text-sm leading-relaxed px-4">
-                    Ative as notificações para receber insights estratégicos a cada 15 segundos.
-                </p>
-            </div>
+        <div id="display" class="min-h-[250px] flex flex-col justify-center transition-all duration-500">
+            <h2 id="tip-title" class="text-xl font-bold text-slate-900 mb-4">Inicie o Fluxo</h2>
+            <p id="tip-desc" class="text-slate-500 text-sm leading-relaxed italic">Ative o toggle abaixo para receber insights no seu app ntfy a cada 15s.</p>
         </div>
 
-        <div class="w-full mt-10 pt-8 border-t border-slate-50">
-            
-            <div class="flex items-center justify-between mb-6 px-2">
-                <div class="text-left">
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Notificações</p>
-                    <p id="status-text" class="text-sm font-medium text-slate-600">Desativadas</p>
+        <div class="mt-8 pt-8 border-t border-slate-50 space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Notificações Remotas</p>
+                    <p id="status-text" class="text-sm font-medium text-slate-600">Aguardando ativação...</p>
                 </div>
-                <label for="toggle-notif" class="relative flex items-center cursor-pointer">
-                    <input type="checkbox" id="toggle-notif" class="sr-only" onchange="handleToggle(this)">
+                <label class="relative flex items-center cursor-pointer">
+                    <input type="checkbox" id="toggle-notif" class="sr-only" onchange="toggleFlow(this)">
                     <div class="toggle-bg w-12 h-7 bg-slate-200 rounded-full shadow-inner transition-colors"></div>
-                    <div class="toggle-dot absolute left-1 top-1 bg-white w-5 h-5 rounded-full shadow-sm border border-slate-100"></div>
+                    <div class="toggle-dot absolute left-1 top-1 bg-white w-5 h-5 rounded-full shadow-sm"></div>
                 </label>
             </div>
-
-            <button onclick="updateDisplay()" class="w-full bg-slate-900 hover:bg-indigo-600 text-white font-semibold py-4 rounded-2xl transition-all duration-300 active:scale-[0.97] flex items-center justify-center gap-2">
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                Próximo Insight
-            </button>
         </div>
     </div>
 
-    <p class="mt-8 text-slate-400 text-[10px] uppercase tracking-[0.2em] font-medium">Powering Sales Data Science</p>
-
     <script>
-        // Data Engine: 15 Insights de Alta Performance
-        const insights = [
-            { t: "Lei da Reciprocidade", d: "Entregue valor real antes de pedir qualquer coisa. O gatilho mental da dívida é poderoso." },
-            { t: "Escuta Ativa", d: "O cliente compra quando se sente compreendido, não quando finalmente entende o seu produto." },
-            { t: "Ancoragem", d: "Sempre apresente o valor do investimento ou o benefício maior antes de revelar o preço final." },
-            { t: "Escassez Genuína", d: "Limite sua oferta no tempo ou quantidade para acelerar decisões conscientes e evitar adiamentos." },
-            { t: "Prova Social", d: "Mostre resultados reais de terceiros. Isso remove o medo do risco inerente a qualquer compra." },
-            { t: "Pós-Venda Ativo", d: "A sua próxima venda começa no sucesso da entrega atual. Não abandone o cliente após o Pix." },
-            { t: "Objeções como Pontes", d: "Trate dúvidas não como barreiras, mas como pedidos do cliente por mais informações." },
-            { t: "Venda Consultiva", d: "Pare de ser um vendedor e torne-se um conselheiro. Diagnostique antes de prescrever." },
-            { t: "Linguagem de Benefícios", d: "Pare de listar especificações. O cliente quer saber o que ele ganha e como a vida dele melhora." },
-            { t: "Follow-up Estratégico", d: "80% das vendas ocorrem após o 5º contato. A persistência educada vence o esquecimento." },
-            { t: "Storytelling", d: "Histórias conectam emocionalmente. Elas humanizam a marca e fixam a solução na memória." },
-            { t: "Gatilho de Autoridade", d: "Demonstre domínio técnico e segurança. O cliente quer comprar de quem sabe o que está fazendo." },
-            { t: "Fechamento por Suposição", d: "Atue como se o negócio já estivesse fechado. Pergunte sobre a implementação, não sobre o 'quer?'." },
-            { t: "Hiper-Personalização", d: "No mundo saturado, o tratamento individualizado é o seu maior diferencial competitivo." },
-            { t: "Overdelivering", d: "Surpreenda positivamente nos detalhes. Entregue mais do que foi prometido e crie advogados da marca." }
-        ];
-
-        let notificationTimer = null;
-
-        // Inicializar Ícones
         lucide.createIcons();
 
-        function updateDisplay() {
-            const card = document.getElementById('tip-card');
-            card.style.opacity = 0;
-            
-            setTimeout(() => {
-                const random = insights[Math.floor(Math.random() * insights.length)];
-                document.getElementById('tip-title').innerText = random.t;
-                document.getElementById('tip-desc').innerText = random.d;
-                card.style.opacity = 1;
-                
-                if (Notification.permission === "granted" && document.getElementById('toggle-notif').checked) {
-                    new Notification("Insight de Vendas", {
-                        body: random.t,
-                        icon: "https://cdn-icons-png.flaticon.com/512/1160/1160358.png"
-                    });
-                }
-            }, 300);
-        }
+        // CONFIGURAÇÃO: Coloque aqui o nome que você criou no app ntfy
+        const NTFY_TOPIC = "insights_vendas_premium_99"; 
+        
+        const insights = [
+            { t: "Escuta Ativa", d: "Ouça 80% do tempo. O cliente entrega a objeção e a solução na fala dele." },
+            { t: "Ancoragem", d: "Apresente o valor do investimento maior antes de revelar o preço final." },
+            { t: "Pós-Venda", d: "A sua próxima venda começa no sucesso da entrega atual. Acompanhe o cliente." },
+            { t: "Gatilho de Autoridade", d: "Demonstre domínio técnico. O cliente compra de quem transmite segurança." },
+            { t: "Follow-up", d: "80% das vendas ocorrem após o 5º contato. Seja persistente e educado." }
+            // Adicione mais aqui...
+        ];
 
-        async function handleToggle(el) {
-            const statusText = document.getElementById('status-text');
-            
-            if (el.checked) {
-                const permission = await Notification.requestPermission();
-                if (permission === "granted") {
-                    statusText.innerText = "Ativadas (15s)";
-                    statusText.classList.add('text-indigo-600');
-                    // Iniciar Timer de 15 segundos
-                    notificationTimer = setInterval(updateDisplay, 15000);
-                    updateDisplay();
-                } else {
-                    el.checked = false;
-                    alert("Por favor, autorize as notificações no navegador.");
-                }
-            } else {
-                statusText.innerText = "Desativadas";
-                statusText.classList.remove('text-indigo-600');
-                clearInterval(notificationTimer);
+        let flowInterval = null;
+
+        async function sendPush(title, message) {
+            try {
+                await fetch(`https://ntfy.sh/${NTFY_TOPIC}`, {
+                    method: 'POST',
+                    body: message,
+                    headers: {
+                        'Title': title,
+                        'Priority': 'high',
+                        'Tags': 'bulb,money_with_wings'
+                    }
+                });
+                console.log("Push enviado com sucesso");
+            } catch (err) {
+                console.error("Erro ao enviar push:", err);
             }
         }
 
-        // --- PWA Service Worker via Blob ---
-        const swCode = `
-            self.addEventListener('install', e => self.skipWaiting());
-            self.addEventListener('fetch', e => e.respondWith(fetch(e.request)));
-        `;
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(blob);
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register(swUrl);
+        function updateContent() {
+            const random = insights[Math.floor(Math.random() * insights.length)];
+            
+            // Update UI
+            const display = document.getElementById('display');
+            display.style.opacity = 0;
+            
+            setTimeout(() => {
+                document.getElementById('tip-title').innerText = random.t;
+                document.getElementById('tip-desc').innerText = random.d;
+                display.style.opacity = 1;
+                
+                // Enviar para o Celular via ntfy
+                sendPush(random.t, random.d);
+            }, 300);
+        }
+
+        function toggleFlow(el) {
+            const statusText = document.getElementById('status-text');
+            const badge = document.getElementById('badge');
+
+            if (el.checked) {
+                statusText.innerText = "Sincronizado com ntfy";
+                statusText.classList.add('text-indigo-600');
+                badge.innerText = "ACTIVE";
+                badge.classList.replace('bg-slate-100', 'bg-green-100');
+                badge.classList.replace('text-slate-500', 'text-green-600');
+                
+                updateContent(); // Primeira execução
+                flowInterval = setInterval(updateContent, 15000);
+            } else {
+                statusText.innerText = "Aguardando ativação...";
+                statusText.classList.remove('text-indigo-600');
+                badge.innerText = "OFFLINE";
+                badge.classList.replace('bg-green-100', 'bg-slate-100');
+                badge.classList.replace('text-green-600', 'text-slate-500');
+                
+                clearInterval(flowInterval);
+            }
         }
     </script>
 </body>
 </html>
-
-
-
